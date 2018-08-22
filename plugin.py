@@ -75,7 +75,7 @@ class BasePlugin:
                 #Domoticz.Image(Filename="Icons.zip").Create()
                 #Domoticz.Debug("Image: "+str(Images["Home-Connect"].ID))
                 Domoticz.Device(Name="Dishwasher-Monitor", Unit=1, TypeName="Text", Used=1).Create()
-                Devices[1].Update(nValue=Devices[1].nValue,sValue=Devices[1].sValue,Image=Images["Home-Connect"].ID)
+                #Devices[1].Update(nValue=Devices[1].nValue,sValue=Devices[1].sValue,Image=Images["Home-Connect"].ID)
         else:
             Domoticz.Error("Scope not correctly set. Only Dishwasher-Monitor allowed")
 
