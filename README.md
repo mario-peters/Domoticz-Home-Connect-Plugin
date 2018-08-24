@@ -30,14 +30,14 @@ Because I'm running Domoticz on my Synology, I have to do some extra installatio
 * sudo ./python3.5 pip install sseclient
 * cd /volume1/\@appstore/py3k/usr/local/lib
 * Create the following symbolic links: certifi, chardet, idna, requests, urllib3, wheel, sseclient.py and six.py
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/certifi certifi
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/chardet charted
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/idna idna
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/requests requests
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/urllib3 urllib3
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/wheel wheel
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/sseclient.py sseclient.py
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/six.py six.py
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/certifi certifi
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/chardet chardet
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/idna idna
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/requests requests
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/urllib3 urllib3
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/wheel wheel
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/sseclient.py sseclient.py
+    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/six.py six.py
 * Create a directory "Home-Connect" in the Domoticz plugins directory
 * Copy "plugin.py" and "homeconnecthelper.py" in newly created directory
 * Set the rights and ownership of the "Home-Connect" directory and "plugin.py" and "homeconnecthelper.py" files correct for the Domoticz-user. In my case user and group 1000
