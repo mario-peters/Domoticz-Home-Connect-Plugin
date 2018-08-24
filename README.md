@@ -39,12 +39,9 @@ Because I'm running Domoticz on my Synology, I have to do some extra installatio
     * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/sseclient.py sseclient.py
     * sudo ln -s /volume1/\@appstore/py3k/usr/local/python3.5/site-packages/six.py six.py
 * Create a directory "Home-Connect" in the Domoticz plugins directory
-* Copy "plugin.py" in newly created directory
-* Set the rights and ownership of the "Home-Connect" directory and "plugin.py" file correct for the Domoticz-user. In my case user and group 1000
+* Copy "plugin.py" and "homeconnecthelper.py" in newly created directory
+* Set the rights and ownership of the "Home-Connect" directory and "plugin.py" and "homeconnecthelper.py" files correct for the Domoticz-user. In my case user and group 1000
     * cd /usr/local/domoticz/var/plugins
-    * sudo chown 1000 Home-Connect
-    * sudo chgrp 1000 Home-Connect
-    * cd Home-Connect
-    * sudo chgrp 1000 plugin.py
-    * sudo chown 1000 plugin.py
+    * sudo chown -R 1000 Home-Connect
+    * sudo chgrp -R 1000 Home-Connect
 * (Re)start Domoticz
