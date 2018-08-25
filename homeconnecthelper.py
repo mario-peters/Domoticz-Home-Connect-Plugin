@@ -131,7 +131,7 @@ def openSSEConnection(self, Devices):
                                     if remainingTimeInSeconds > 0:
                                         remainingTime = datetime.datetime.now() + datetime.timedelta(seconds=remainingTimeInSeconds)
                                         Domoticz.Debug("remainingTime: " + str(remainingTime.strftime("%T")))
-                                        sValueNew = "Run - " + remainingTime.strfTime("%T")
+                                        sValueNew = "Run - " + remainingTime.strftime("%T")
                                         if Devices[1].sValue != sValueNew:
                                             Devices[1].Update(nValue=value,sValue=sValueNew)
     except HTTPError as httperror:
