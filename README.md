@@ -1,16 +1,16 @@
 Welcome to the Domoticz-Home-Connect-Plugin wiki!
 
 # Description
-This plugin makes it possible to monitor Home-Connect devices in Domoticz.
+This plugin makes it possible to monitor Home Connect devices in Domoticz.
 
 # Features
-Currently the following Home-Connect scopes ([API Home-Connect](https://developer.home-connect.com/docs/authorization/scope)) are supported
+Currently the following Home Connect scopes ([API Home Connect](https://developer.home-connect.com/docs/authorization/scope)) are supported
 * Dishwasher-Monitor
 
 # Configuration
-* Username is the username which you use in the Home-Connect app
-* Password is the password which you use in the Home-Connect app
-* Scope is the scope of the devices according to the Home-Connect API (see Features for supported scopes)
+* Username is the username which you use in the Home Connect app
+* Password is the password which you use in the Home Connect app
+* Scope is the scope of the devices according to the Home Connect API (see Features for supported scopes)
 
 # Installation
 ## Default installation
