@@ -7,41 +7,11 @@ This plugin makes it possible to monitor Home Connect devices in Domoticz.
 Currently the following Home Connect scopes ([API Home Connect](https://developer.home-connect.com/docs/authorization/scope)) are supported
 * Dishwasher-Monitor
 
-# Configuration
-* Username is the username which you use in the Home Connect app
-* Password is the password which you use in the Home Connect app
-* Scope is the scope of the devices according to the Home Connect API (see Features for supported scopes)
+# Changelog
+* v.1.0.2 Plugin extended with the possibility to show the progress of the dishwashing process via images. A program contains the following progress statuses Rinse, Clean, Shine and Dry. Depending on the progress, the correct picture is shown. Siemens has copyright on the original images shown by the dishwasher's infolight. The 4 pictures will therefore have to be made by yourself. The right images can be loaded via a separate python script. Since existing Domoticz (javascript) files are modified, this has been tested on Domoticz 4.9700. There is also a picture (Home-Connect.png) added as the standard icon of the plugin.
+* v.1.0.1 Small bugfixes
+* v.1.0.0 Initial release
 
-# Installation
-## Default installation
-* Create a directory "Home-Connect" in the Domoticz plugins directory
-* Copy "plugin.py" in newly created directory
-* Set the rights and ownership of the "Home-Connect" directory and "plugin.py" file correct for the Domoticz-user
-* (Re)Start Domoticz
-
-## Synolygy
-Because I'm running Domoticz on my Synology, I have to do some extra installation steps. By doing the following steps I was able to start the plugin.
-* Install the Synology Python3 package
-* Install the Domoticz version with python from Jadahl's website ([Jadahl](http://www.jadahl.com))
-* Log-in by ssh
-* cd /volum1/\@appstore/py3k/usr/local/bin
-* sudo wget https://bootstrap.pypa.io/get-pip.py
-* sudo ./python3.5 pip install requests
-* sudo ./python3.5 pip install sseclient
-* cd /volume1/\@appstore/py3k/usr/local/lib
-* Create the following symbolic links: certifi, chardet, idna, requests, urllib3, wheel, sseclient.py and six.py
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/certifi certifi
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/chardet chardet
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/idna idna
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/requests requests
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/urllib3 urllib3
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/wheel wheel
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/sseclient.py sseclient.py
-    * sudo ln -s /volume1/\@appstore/py3k/usr/local/lib/python3.5/site-packages/six.py six.py
-* Create a directory "Home-Connect" in the Domoticz plugins directory
-* Copy "plugin.py" and "homeconnecthelper.py" in newly created directory
-* Set the rights and ownership of the "Home-Connect" directory and "plugin.py" and "homeconnecthelper.py" files correct for the Domoticz-user. In my case user and group 1000
-    * cd /usr/local/domoticz/var/plugins
-    * sudo chown -R 1000 Home-Connect
-    * sudo chgrp -R 1000 Home-Connect
-* (Re)start Domoticz
+# TODO
+* Progress images for programs Quick45, Glas40, Kurz60, NightWash, Auto2 and Intensiv70
+* New Home Connect appliances
