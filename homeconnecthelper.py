@@ -40,7 +40,7 @@ False : Token not correctly refreshed
 def refreshToken(self):
     url_refresh_token = BASEURL + "/security/oauth/token"
     data_refresh_token = {"refresh_token": self.refresh_token, "grant_type": "refresh_token"}
-    response_refresh_token = request.post(url_refresh_token,data_refresh_token,HEADER_URLENCODED)
+    response_refresh_token = requests.post(url_refresh_token,data_refresh_token,HEADER_URLENCODED)
     json_refresh_token = json.loads(response_refresh_token.text)
     self.access_token = ""
     self.refresh_token = ""
@@ -120,20 +120,63 @@ def openSSEConnection(self, Devices):
                             if k == "value":
                                 value = data[k]
                         if (key != "") and (value != ""):
-                            if key == "BSH.Common.Status.OperationState":
-                                status = value.rpartition(".")[2]
-                                Domoticz.Debug("status: " + status)
-                                if Devices[1].sValue != status:
-                                   Devices[1].Update(nValue=0,sValue=status)
+                            if key == "BSH.Common.Root.SelectedProgram":
+                                Domoticz.Log(key + " --> " + str(value).rpartition(".")[2])
+                                self.selectedprogram = value.rpartition(".")[2]
+                            #if key == "BSH.Common.Root.ActiveProgram":
+                                #Domoticz.Log(key + " --> " + str(value))
                             if key == "BSH.Common.Option.RemainingProgramTime":
                                 if Devices[1].sValue.startswith("Run") == True:
                                     remainingTimeInSeconds = int(value)
                                     if remainingTimeInSeconds > 0:
                                         remainingTime = datetime.datetime.now() + datetime.timedelta(seconds=remainingTimeInSeconds)
-                                        Domoticz.Debug("remainingTime: " + str(remainingTime.strftime("%T")))
-                                        sValueNew = "Run - " + remainingTime.strftime("%T")
+                                        Domoticz.Debug("remainingTime: " + str(remainingTime.strftime("%H:%M")))
+                                        sValueNew = "Run - " + remainingTime.strftime("%H:%M")
                                         if Devices[1].sValue != sValueNew:
                                             Devices[1].Update(nValue=value,sValue=sValueNew)
+                            if key == "BSH.Common.Option.ProgramProgress":
+                                Domoticz.Log(key + " --> " + str(value))
+                                sValueNew = Devices[1].sValue
+                                Domoticz.Log("sValueNew: "+sValueNew)
+                                if self.selectedprogram == "PreRinse":
+                                    if sValueNew.count('_Run') == 0:
+                                        sValueNew = "rinse_"+sValueNew
+                                    else:
+                                        sValueNew = "rinse_"+sValueNew.split('_', 1)[1]
+                                #if self.selectedprogram == "Quick45":
+                                #if self.selectedprogram == "Glas40":
+                                #if self.selectedprogram == "Kurz60":
+                                #if self.selectedprogram == "NightWash":
+                                if self.selectedprogram == "Eco50":
+                                    if value > 0 and value < 10:
+                                        if sValueNew.count('_Run') == 0:
+                                            sValueNew = "rinse_"+sValueNew
+                                        else:
+                                            sValueNew = "rinse_"+sValueNew.split('_', 1)[1]
+                                    if value >= 10 and value < 60:
+                                        if sValueNew.count('_Run') == 0:
+                                            sValueNew = "clean_"+sValueNew
+                                        else:
+                                            sValueNew = "clean_"+sValueNew.split('_', 1)[1]
+                                    if value >= 60 and value < 70:
+                                        if sValueNew.count('_Run') == 0:
+                                            sValueNew = "shine_"+sValueNew
+                                        else:
+                                            sValueNew = "shine_"+sValueNew.split('_', 1)[1]
+                                    if value >= 70:
+                                        if sValueNew.count('_Run') == 0:
+                                            sValueNew = "dry_"+sValueNew
+                                        else:
+                                            sValueNew = "dry_"+sValueNew.split('_', 1)[1]
+                                #if self.selectedprogram == "Auto2":
+                                #if self.selectedprogram == "Intensiv70":
+                                if Devices[1].sValue != sValueNew:
+                                    Devices[1].Update(nValue=Devices[1].nValue,sValue=sValueNew)
+                            if key == "BSH.Common.Status.OperationState":
+                                status = value.rpartition(".")[2]
+                                Domoticz.Debug("status: " + status)
+                                if Devices[1].sValue != status:
+                                   Devices[1].Update(nValue=0,sValue=status)
     except HTTPError as httperror:
         Domoticz.Error(httperror.response.text)
     except Exception as e:

@@ -3,20 +3,20 @@
 # Author: GizMoCuz
 #
 """
-<plugin key="Home-Connect" name="Home-Connect Plugin" author="Mario Peters" version="1.0.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Home-Connect" name="Home Connect Plugin" author="Mario Peters" version="1.0.2" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
-        <h2>Home-Connect domoticz plugin</h2><br/>
+        <h2>Home Connect domoticz plugin</h2><br/>
         <h3>Features</h3>
         <ul style="list-style-type:square">
             <li>Dishwasher-Monitor supported</li>
         </ul>
         <h3>Configuration</h3>
         <ul style="list-style-type:square">
-            <li>Username is the username which you use in the Home-Connect app</li>
-            <li>Password is the password which you use in the Home-Connect app</li>
-            <li>Scope is the scope of the devices according to the Home-Connect API (<a href="https://developer.home-connect.com/docs/authorization/scope">API Home-Connect</a>).
+            <li>Username is the username which you use in the Home Connect app</li>
+            <li>Password is the password which you use in the Home Connect app</li>
+            <li>Scope is the scope of the devices according to the Home Connect API (<a href="https://developer.home-connect.com/docs/authorization/scope">API Home Connect</a>).
                 <ul style="list-style-type:square">
-                    <li>Dishwasher-Monitor (only supported at this moment</li>
+                    <li>Dishwasher-Monitor (only supported at this moment)</li>
                 </ul>
             </li>
         </ul>
@@ -36,6 +36,7 @@
 import Domoticz
 import datetime
 import homeconnecthelper
+import os
 #import threading
 #import multiprocessing
 
@@ -45,7 +46,8 @@ class BasePlugin:
     token_expired = datetime.datetime.now()
     refresh_token = ""
     haId = ""
-    dishwasher_thread = None
+    selectedprogram = ""    
+    #dishwasher_thread = None
 
     def __init__(self):
         #self.var = 123
@@ -60,9 +62,11 @@ class BasePlugin:
         if len(Devices) == 0:
             Domoticz.Log("Create devices")
             Domoticz.Device(Name="Dishwasher-Monitor", Unit=1, TypeName="Text", Used=1).Create()
+            Devices[1].Update(nValue=Devices[1].nValue,sValue=Devices[1].sValue,Name="Dishwasher-Monitor")
 
     def onStop(self):
         Domoticz.Log("onStop called")
+
         #self.dishwasher_thread.terminate()
 
     def onConnect(self, Connection, Status, Description):
