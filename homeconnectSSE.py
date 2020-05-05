@@ -15,13 +15,13 @@ logger = logging.getLogger( 'MyLogger' )
 logger.addHandler( logHandler )
 logger.setLevel( logging.INFO )
 
-if len (sys.argv) == 3:
+if len (sys.argv) == 4:
     HEADER_JSON = {"content-type": "application/vnd.bsh.sdk.v1+json"}
-    response = requests.post("http://192.168.1.108:"+sys.argv[2],"haId:"+sys.argv[1],HEADER_JSON)
+    response = requests.post("http://"+sys.argv[2]+":"+sys.argv[3],"haId:"+sys.argv[1],HEADER_JSON)
     haId = response.text
     response.close()
     logger.info(haId)
-    response = requests.post("http://192.168.1.108:"+sys.argv[2],"access_token",HEADER_JSON)
+    response = requests.post("http://"+sys.argv[2]+":"+sys.argv[3],"access_token",HEADER_JSON)
     access_token = response.text
     response.close()
     logger.info(access_token)
@@ -34,7 +34,7 @@ if len (sys.argv) == 3:
             for msg in messages:
                 logger.info("message: [["+str(msg)+"]]")
                 HEADER_JSON = {"content-type": "application/vnd.bsh.sdk.v1+json"}
-                response = requests.post("http://192.168.1.108:"+sys.argv[2],str(msg),HEADER_JSON)
+                response = requests.post("http://"+sys.argv[2]+":"+sys.argv[3],str(msg),HEADER_JSON)
                 response.close()
         except HTTPError as httperror:
             logger.error(httperror.response.text)

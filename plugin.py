@@ -3,7 +3,7 @@
 # Author: GizMoCuz
 #
 """
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="1.0.2" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="2.0.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
         <h2>Home Connect domoticz plugin</h2><br/>
         <h3>Features</h3>
@@ -54,12 +54,12 @@ class BasePlugin:
     token_expired = datetime.datetime.now()
     refresh_token = ""
     selectedprogram = ""
-    DRY_ICON = "Home-ConnectAlt1"
-    RINSE_ICON = "Home-ConnectAlt2"
-    SHINE_ICON = "Home-ConnectAlt3"
-    FINISH_ICON = "Home-ConnectAlt4"
-    CLEAN_ICON = "Home-ConnectAlt5"
-    HOMECONNECT_ICON = "Home-Connect"
+    DRY_ICON = "Domoticz-Home-Connect-PluginAlt1"
+    RINSE_ICON = "Domoticz-Home-Connect-PluginAlt2"
+    SHINE_ICON = "Domoticz-Home-Connect-PluginAlt3"
+    FINISH_ICON = "Domoticz-Home-Connect-PluginAlt4"
+    CLEAN_ICON = "Domoticz-Home-Connect-PluginAlt5"
+    HOMECONNECT_ICON = "Domoticz-Home-Connect-Plugin"
 
     def __init__(self):
         #self.var = 123
@@ -73,42 +73,42 @@ class BasePlugin:
             Domoticz.Debug("ID: "+str(Images[self.HOMECONNECT_ICON].ID))
         else:
             Domoticz.Debug("no Home-Connect Image")
-            Domoticz.Image("Home-Connect Icons.zip").Create()
+            Domoticz.Image("Domoticz-Home-Connect-Plugin Icons.zip").Create()
         
         #Dry Logo
         if self.DRY_ICON in Images:
             Domoticz.Debug("ID: "+str(Images[self.DRY_ICON].ID))
         else:
             Domoticz.Debug("no Home-Connect dry Image")
-            Domoticz.Image("Home-Connect1 Icons.zip").Create()
+            Domoticz.Image("Domoticz-Home-Connect-Plugin1 Icons.zip").Create()
 
         #Rinse Logo
         if self.RINSE_ICON in Images:
             Domoticz.Debug("ID: "+str(Images[self.RINSE_ICON].ID))
         else:
             Domoticz.Debug("no Home-Connect rinse Image")
-            Domoticz.Image("Home-Connect2 Icons.zip").Create()
+            Domoticz.Image("Domoticz-Home-Connect-Plugin2 Icons.zip").Create()
 
         #Shine Logo
         if self.SHINE_ICON in Images:
             Domoticz.Debug("ID: "+str(Images[self.SHINE_ICON].ID))
         else:
             Domoticz.Debug("no Home-Connect shine Image")
-            Domoticz.Image("Home-Connect3 Icons.zip").Create()
+            Domoticz.Image("Domoticz-Home-Connect-Plugin3 Icons.zip").Create()
 
         #Finish Logo
         if self.FINISH_ICON in Images:
             Domoticz.Debug("ID: "+str(Images[self.FINISH_ICON].ID))
         else:
             Domoticz.Debug("no Home-Connect finish Image")
-            Domoticz.Image("Home-Connect4 Icons.zip").Create()
+            Domoticz.Image("Domoticz-Home-Connect-Plugin4 Icons.zip").Create()
 
         #Clean Logo
         if self.CLEAN_ICON in Images:
             Domoticz.Debug("ID: "+str(Images[self.CLEAN_ICON].ID))
         else:
             Domoticz.Debug("no Home-Connect clean Image")
-            Domoticz.Image("Home-Connect5 Icons.zip").Create()
+            Domoticz.Image("Domoticz-Home-Connect-Plugin5 Icons.zip").Create()
 
         Domoticz.Log(str(Images))
         homeconnecthelper.connectHomeConnect(self,Parameters["Username"],Parameters["Password"],Parameters["Mode1"])
@@ -209,8 +209,7 @@ class BasePlugin:
                                                 #Domoticz.Log(str(Devices[d].sValue) + " --> "+str(sValueNew))
                                                 #if str(Devices[d].sValue) != str(sValueNew):
                                                     #Devices[d].Update(nValue=deviceValue,sValue=str(sValueNew))
-                                                #Devices[d].Update(nValue=Devices[d].nValue,sValue=Devices[d].sValue,Options={"Custom": "22;:15"})
-                                                Devices[d].Update(nValue=Devices[d].nValue,sValue=Devices[d].sValue,Options={"Custom": str(remainingtime.hour)+";:"+str(remainingTime.minute)})
+                                                Devices[d].Update(nValue=Devices[d].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.minute)})
                                         elif deviceKey == "BSH.Common.Option.ProgramProgress":
                                             Domoticz.Log(deviceKey+" --> "+str(deviceValue))
                                             if self.selectedprogram == "PreRinse":
