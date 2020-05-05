@@ -10,16 +10,19 @@
 ### END INIT INFO
 
 # Change the next 3 lines to suit where you install your script and what you want to call it
-DIR=/home/mario/dev-domoticz/plugins/Home-Connect
+#DIR=<DIR Domoticz-Home-Connect-Plugin>
 DAEMON=$DIR/homeconnectSSE.py
-DAEMON_NAME=homeconnectSSE_Dishwasher
-
-# Add any command line options for your daemon here
-DAEMON_OPTS="Dishwasher 8081"
+DEVICE_NAME=<Dishwasher or Washer>
+DOMOTICZ_IP=<ip address of Domoticz>
+DOMOTICZ_PORT=<port of hardware config in Domoticz>
+DAEMON_NAME=homeconnectSSE_$DEVICE_NAME
 
 # This next line determines what user the script runs as.
 # Root generally not recommended but necessary if you ar using the Raspberry Pi GPIO from Python.
-DAEMON_USER=root
+DAEMON_USER=<username>
+
+# Add any command line options for your daemon here
+DAEMON_OPTS="$DEVICE_NAME $DOMOTICZ_IP $DOMOTICZ_PORT"
 
 #the process ID of the script when it runs is stored here:
 PIDFILE=/var/run/$DAEMON_NAME.pid
