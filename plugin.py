@@ -209,7 +209,8 @@ class BasePlugin:
                                                 #Domoticz.Log(str(Devices[d].sValue) + " --> "+str(sValueNew))
                                                 #if str(Devices[d].sValue) != str(sValueNew):
                                                     #Devices[d].Update(nValue=deviceValue,sValue=str(sValueNew))
-                                                Devices[d].Update(nValue=Devices[d].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.minute)})
+                                                #Devices[d].Update(nValue=Devices[d].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.minute)})
+                                                Devices[d].Update(nValue=Devices[d].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.strftime("%M"))})
                                         elif deviceKey == "BSH.Common.Option.ProgramProgress":
                                             Domoticz.Log(deviceKey+" --> "+str(deviceValue))
                                             if self.selectedprogram == "PreRinse":
