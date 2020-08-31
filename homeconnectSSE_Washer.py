@@ -40,8 +40,8 @@ if len (sys.argv) == 5:
                     logger.info("message: [["+str(msg)+"]]")
                     count = 0
                     HEADER_JSON = {"content-type": "application/vnd.bsh.sdk.v1+json"}
-                    response = requests.post("http://"+sys.argv[2]+":"+sys.argv[3],str(msg),HEADER_JSON)
-                    response.close()
+                    #response = requests.post("http://"+sys.argv[2]+":"+sys.argv[3],str(msg),HEADER_JSON)
+                    #response.close()
         except HTTPError as httperror:
             logger.error(httperror.response.text)
         except Exception as e:

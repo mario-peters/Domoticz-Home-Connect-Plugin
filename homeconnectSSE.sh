@@ -16,13 +16,13 @@ DEVICE_NAME=<Dishwasher or Washer>
 DOMOTICZ_IP=<ip address of Domoticz>
 DOMOTICZ_PORT=<port of hardware config in Domoticz>
 DAEMON_NAME=homeconnectSSE_$DEVICE_NAME
-
+DAEMON_LOG=<log location>$DAEMON_NAME.log
 # This next line determines what user the script runs as.
 # Root generally not recommended but necessary if you ar using the Raspberry Pi GPIO from Python.
 DAEMON_USER=<username>
 
 # Add any command line options for your daemon here
-DAEMON_OPTS="$DEVICE_NAME $DOMOTICZ_IP $DOMOTICZ_PORT"
+DAEMON_OPTS="$DEVICE_NAME $DOMOTICZ_IP $DOMOTICZ_PORT $DAEMON_LOG"
 
 #the process ID of the script when it runs is stored here:
 PIDFILE=/var/run/$DAEMON_NAME.pid

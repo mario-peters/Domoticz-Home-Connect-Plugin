@@ -204,12 +204,6 @@ class BasePlugin:
                                             if remainingTimeInSeconds > 0:
                                                 remainingTime = datetime.datetime.now() + datetime.timedelta(seconds=remainingTimeInSeconds)
                                                 Domoticz.Log("remainingTime: "+str(remainingTime.strftime("%H:%M")))
-                                                #sValueNew = "Run - " + remainingTime.strftime("%H:%M")
-                                                #sValueNew = remainingTime.strftime("%H:%M")
-                                                #Domoticz.Log(str(Devices[d].sValue) + " --> "+str(sValueNew))
-                                                #if str(Devices[d].sValue) != str(sValueNew):
-                                                    #Devices[d].Update(nValue=deviceValue,sValue=str(sValueNew))
-                                                #Devices[d].Update(nValue=Devices[d].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.minute)})
                                                 Devices[d].Update(nValue=Devices[d].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.strftime("%M"))})
                                         elif deviceKey == "BSH.Common.Option.ProgramProgress":
                                             Domoticz.Log(deviceKey+" --> "+str(deviceValue))
@@ -237,6 +231,11 @@ class BasePlugin:
                                                 Devices[d].Update(nValue=0,sValue=status,Image=Images[self.HOMECONNECT_ICON].ID)
                                         elif deviceKey == "BSH.Common.Setting.PowerState":
                                             Domoticz.Log(Devices[d].Description+" is turned "+deviceValue.rpartition(".")[2])
+                                        elif deviceKey == "BSH.Common.Status.DoorState":
+                                            Domoticz.Log(Devices[d].Description+" door is "+deviceValue.rpartition(".")[2])
+                                        elif deviceKey == "BSH.Common.Event.ProgramFinished":
+                                            Domoticz.Log(Devices[d].Description+" finished: "+deviceValue.rpartition(".")[2])
+                                            Devices[d].Update(nValue=Devices[d].nValue,sValue="0",Options={})
                                         else:
                                             Domoticz.Log(deviceKey+" --> "+str(deviceValue))
                 #Domoticz.Log(str(base64.b64decode(str(value_msg))))
