@@ -10,6 +10,7 @@
         <ul style="list-style-type:square">
             <li>Dishwasher-Monitor supported</li>
             <li>Washer-Monitor supported</li>
+            <li>Oven-Monitor supported</li>
         </ul>
         <h3>Configuration</h3>
         <ul style="list-style-type:square">
@@ -20,6 +21,7 @@
                 <ul style="list-style-type:square">
                     <li>Dishwasher-Monitor</li>
                     <li>Washer-Monitor</li>
+                    <li>Oven-Monitor</li>
                 </ul>
             </li>
             <li>Custom icons. Option for choosing custom icons. Default is False.</li>
@@ -34,6 +36,7 @@
             <options>
                 <option label="Dishwasher" value="Dishwasher" default="true"/>
                 <option label="Washer" value="Washer"/>
+                <option label="Oven" value="Oven-Monitor"/>
             </options>
         </param>
         <param field="Mode2" label="Custom icons" width="150px" required="false">
@@ -123,7 +126,7 @@ class BasePlugin:
         Domoticz.Log(str(Images))
         homeconnecthelper.connectHomeConnect(self,Parameters["Username"],Parameters["Password"],Parameters["Mode1"])
         haId = homeconnecthelper.gethaId(self,Parameters["Mode1"])
-        Domoticz.Debug("haId: "+haId)
+        Domoticz.Log("haId: "+haId)
         self.selectedprogram = homeconnecthelper.getActiveProgram(self,haId)
         if self.selectedprogram != "":
             self.selectedprogram = self.selectedprogram.rpartition(".")[2]
@@ -132,11 +135,16 @@ class BasePlugin:
         if len(Devices) == 0:
             Domoticz.Log("Create devices")
             if haId != None:
+                devicename = Parameters["Mode1"]
+                Domoticz.Log("devicename: "+devicename)
+                Domoticz.Log(str(devicename.endswith("-Monitor")))
+                if not devicename.endswith("-Monitor"):
+                    devicename = devicename + "-Monitor"
                 if Parameters["Mode2"] == "True":
-                    Domoticz.Device(Name=Parameters["Mode1"]+"-Monitor", Unit=1, TypeName="Custom", Used=1, Description=haId, Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    Domoticz.Device(Name=devicename, Unit=1, TypeName="Custom", Used=1, Description=haId, Image=Images[self.HOMECONNECT_ICON].ID).Create()
                 else:
-                    Domoticz.Device(Name=Parameters["Mode1"]+"-Monitor", Unit=1, TypeName="Custom", Used=1, Description=haId).Create()
-                Devices[1].Update(nValue=Devices[1].nValue,sValue=Devices[1].sValue,Name=Parameters["Mode1"]+"-Monitor")
+                    Domoticz.Device(Name=devicename, Unit=1, TypeName="Custom", Used=1, Description=haId).Create()
+                #Devices[1].Update(nValue=Devices[1].nValue,sValue=Devices[1].sValue,Name=Parameters["Mode1"]+"-Monitor")
 
         self.httpServerConn = Domoticz.Connection(Name="Home-Connect "+Parameters["Mode1"]+" WebServer", Transport="TCP/IP", Protocol="HTTP", Port=Parameters["Port"])
         self.httpServerConn.Listen()

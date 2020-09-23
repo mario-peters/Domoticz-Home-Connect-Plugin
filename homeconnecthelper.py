@@ -94,7 +94,7 @@ def gethaId(self,scope):
                         #Domoticz.Debug(self.haId)
                     if key == "type":
                         scopeType = item[key]
-                if scopeType == scope:
+                if scopeType == scope or (scopeType+"-Monitor") == scope:
                     return haId
     return None
 
