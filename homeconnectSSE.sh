@@ -12,7 +12,7 @@
 # Change the next 3 lines to suit where you install your script and what you want to call it
 DIR=<DIR Domoticz-Home-Connect-Plugin>
 DAEMON=$DIR/homeconnectSSE.py
-DEVICE_NAME=<Dishwasher or Washer>
+DEVICE_NAME=<Dishwasher, Washer or Oven>
 DOMOTICZ_IP=<ip address of Domoticz>
 DOMOTICZ_PORT=<port of hardware config in Domoticz>
 DAEMON_NAME=homeconnectSSE_$DEVICE_NAME
