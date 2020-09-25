@@ -136,7 +136,7 @@ def connectHomeConnect(self,username,password,scope):
     #'Request authorization to access home appliance" and "Return device code, user code, verification uri, ..."
     url_authorization = BASEURL + "/security/oauth/device_authorization"
     scope = "IdentifyAppliance " + scope
-    data_authorization = {"client_id": CLIENT_ID, "scope": scope}
+    data_authorization = {"client_id": self.clientid, "scope": scope}
     response_authorization = requests.post(url_authorization,data_authorization,HEADER_URLENCODED)
     Domoticz.Debug(response_authorization.text)
     json_data_authorization = json.loads(response_authorization.text)
@@ -163,7 +163,7 @@ def connectHomeConnect(self,username,password,scope):
         session = requests.Session()
 
         #log in part
-        payload_login = {"client_id": CLIENT_ID, "user_code": user_code, "email": username, "password": password}
+        payload_login = {"client_id": self.clientid, "user_code": user_code, "email": username, "password": password}
         url_login = BASEURL + "/security/oauth/device_login"
         response_login = session.post(url_login, data=payload_login)
         Domoticz.Debug(response_login.text)
@@ -173,8 +173,8 @@ def connectHomeConnect(self,username,password,scope):
         response_login.close()
     
         #authorize part
-        #payload_grant = {"session_id": sessionid, "client_id": CLIENT_ID, "user_code": user_code, "email": username, "app_name": APP_NAME, "scope": scope}
-        payload_grant = {"user_code": user_code, "session_id": sessionid, "input_aborted": "false", "app_name": APP_NAME, "accept_language": "nl", "client_id": CLIENT_ID, "email": username, "scope": scope, "region": "EU", "environment": "PRD"}
+        #payload_grant = {"session_id": sessionid, "client_id": self.clientid, "user_code": user_code, "email": username, "app_name": APP_NAME, "scope": scope}
+        payload_grant = {"user_code": user_code, "session_id": sessionid, "input_aborted": "false", "app_name": APP_NAME, "accept_language": "nl", "client_id": self.clientid, "email": username, "scope": scope, "region": "EU", "environment": "PRD"}
         url_grant = BASEURL + "/security/oauth/device_grant"
         response_grant = session.post(url_grant, data=payload_grant)
         Domoticz.Debug("response_grant: "+response_grant.text)
@@ -185,7 +185,7 @@ def connectHomeConnect(self,username,password,scope):
     if authorized:
         Domoticz.Log("Device \"" + device_code + "\" is authorized by Home-Connect.")
         url_tokenrequest = BASEURL + "/security/oauth/token"
-        payload_tokenrequest = {"grant_type": "device_code", "device_code": device_code, "client_id": CLIENT_ID}
+        payload_tokenrequest = {"grant_type": "device_code", "device_code": device_code, "client_id": self.clientid}
         response_tokenrequest = requests.post(url_tokenrequest,payload_tokenrequest, HEADER_URLENCODED)
         Domoticz.Debug("response_tokenrequest: "+response_tokenrequest.text)
         json_tokenrequest = json.loads(response_tokenrequest.text)

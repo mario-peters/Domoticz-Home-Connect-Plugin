@@ -1,9 +1,4 @@
-# Basic Python Plugin Example
-#
-# Author: GizMoCuz
-#
-"""
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="2.0.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="2.0.2" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
         <h2>Home Connect domoticz plugin</h2><br/>
         <h3>Features</h3>
@@ -25,6 +20,7 @@
                 </ul>
             </li>
             <li>Custom icons. Option for choosing custom icons. Default is False.</li>
+            <li>Client ID: Client ID of the application as you registerd in your Home Connect Developer account</li>
         </ul>
         <br/><br/>
     </description>
@@ -45,6 +41,7 @@
                 <option label="False" value="False" default="true"/>
             </options>
         </param>
+        <param field="Mode3" label="Client ID" width="600px" required="true"/>
     </params>
 </plugin>
 """
@@ -62,6 +59,7 @@ class BasePlugin:
     httpServerConn = None
     httpServerConns = {}
     httpClientConn = None
+    clientid = ""
     access_token = ""
     token_expired = datetime.datetime.now()
     refresh_token = ""
@@ -80,6 +78,7 @@ class BasePlugin:
     def onStart(self):
         Domoticz.Log("onStart called "+Parameters["Key"])
         Domoticz.Log("Custom Icons: "+Parameters["Mode2"])
+        self.clientid = Parameters["Mode3"]
         if Parameters["Mode2"] == "True":
             #Home-Connect Logo
             if self.HOMECONNECT_ICON in Images:
@@ -253,7 +252,7 @@ class BasePlugin:
                                                 if Parameters["Mode2"] == "True":
                                                     Devices[d].Update(nValue=0,sValue=status,Image=Images[self.HOMECONNECT_ICON].ID)
                                                 else:
-                                                    Device[d].Update(nValue=0,sValue=status)
+                                                    Devices[d].Update(nValue=0,sValue=status)
                                         elif deviceKey == "BSH.Common.Setting.PowerState":
                                             Domoticz.Log(Devices[d].Description+" is turned "+deviceValue.rpartition(".")[2])
                                         elif deviceKey == "BSH.Common.Status.DoorState":
