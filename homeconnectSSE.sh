@@ -10,6 +10,7 @@
 ### END INIT INFO
 
 # Change the next 3 lines to suit where you install your script and what you want to call it
+PYTHON_PATH=<Path to python executable>
 DIR=<DIR Domoticz-Home-Connect-Plugin>
 DAEMON=$DIR/homeconnectSSE.py
 DEVICE_NAME=<Dishwasher, Washer or Oven>
@@ -22,7 +23,7 @@ DAEMON_LOG=<log location>$DAEMON_NAME.log
 DAEMON_USER=<username>
 
 # Add any command line options for your daemon here
-DAEMON_OPTS="$DEVICE_NAME $DOMOTICZ_IP $DOMOTICZ_PORT $DAEMON_LOG"
+DAEMON_OPTS="$DAEMON $DEVICE_NAME $DOMOTICZ_IP $DOMOTICZ_PORT $DAEMON_LOG"
 
 #the process ID of the script when it runs is stored here:
 PIDFILE=/var/run/$DAEMON_NAME.pid
@@ -31,7 +32,7 @@ PIDFILE=/var/run/$DAEMON_NAME.pid
 
 do_start () {
     log_daemon_msg "Starting system $DAEMON_NAME daemon"
-    start-stop-daemon --start --background --pidfile $PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --startas $DAEMON -- $DAEMON_OPTS
+    start-stop-daemon --start --background --pidfile $PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --exec $PYTHON_PATH -- $DAEMON_OPTS
     log_end_msg $?
 }
 do_stop () {

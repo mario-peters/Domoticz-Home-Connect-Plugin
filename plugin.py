@@ -1,7 +1,7 @@
 """
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="2.0.2" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.0.0" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
-        <h2>Home Connect domoticz plugin</h2><br/>
+        <h2>Home Connect domoticz plugin 3.0</h2><br/>
         <h3>Features</h3>
         <ul style="list-style-type:square">
             <li>Dishwasher-Monitor supported</li>
@@ -33,7 +33,7 @@
             <options>
                 <option label="Dishwasher" value="Dishwasher" default="true"/>
                 <option label="Washer" value="Washer"/>
-                <option label="Oven" value="Oven-Monitor"/>
+                <option label="Oven" value="Oven"/>
             </options>
         </param>
         <param field="Mode2" label="Custom icons" width="150px" required="false">
@@ -52,8 +52,6 @@ import base64
 import homeconnecthelper
 import datetime
 import os
-#import threading
-#import multiprocessing
 
 class BasePlugin:
 
@@ -61,6 +59,7 @@ class BasePlugin:
     httpServerConns = {}
     httpClientConn = None
     clientid = ""
+    haId = ""
     access_token = ""
     token_expired = datetime.datetime.now()
     refresh_token = ""
@@ -71,6 +70,9 @@ class BasePlugin:
     FINISH_ICON = "Domoticz-Home-Connect-PluginAlt4"
     CLEAN_ICON = "Domoticz-Home-Connect-PluginAlt5"
     HOMECONNECT_ICON = "Domoticz-Home-Connect-Plugin"
+    DEVICE_DISHWASHER = "Dishwasher"
+    DEVICE_WASHER = "Washer"
+    DEVICE_OVEN = "Oven"
 
     def __init__(self):
         #self.var = 123
@@ -78,73 +80,93 @@ class BasePlugin:
 
     def onStart(self):
         Domoticz.Log("onStart called "+Parameters["Key"])
-        Domoticz.Log("Custom Icons: "+Parameters["Mode2"])
         self.clientid = Parameters["Mode3"]
-        if Parameters["Mode2"] == "True":
-            #Home-Connect Logo
-            if self.HOMECONNECT_ICON in Images:
-                Domoticz.Debug("ID: "+str(Images[self.HOMECONNECT_ICON].ID))
-            else:
-                Domoticz.Debug("no Home-Connect Image")
-                Domoticz.Image("Domoticz-Home-Connect-Plugin Icons.zip").Create()
-            if Parameters["Mode1"] == "Dishwasher": 
-                #Dry Logo
-                if self.DRY_ICON in Images:
-                    Domoticz.Debug("ID: "+str(Images[self.DRY_ICON].ID))
-                else:
-                    Domoticz.Debug("no Home-Connect dry Image")
-                    Domoticz.Image("Domoticz-Home-Connect-Plugin1 Icons.zip").Create()
-
-                #Rinse Logo
-                if self.RINSE_ICON in Images:
-                    Domoticz.Debug("ID: "+str(Images[self.RINSE_ICON].ID))
-                else:
-                    Domoticz.Debug("no Home-Connect rinse Image")
-                    Domoticz.Image("Domoticz-Home-Connect-Plugin2 Icons.zip").Create()
-
-                #Shine Logo
-                if self.SHINE_ICON in Images:
-                    Domoticz.Debug("ID: "+str(Images[self.SHINE_ICON].ID))
-                else:
-                    Domoticz.Debug("no Home-Connect shine Image")
-                    Domoticz.Image("Domoticz-Home-Connect-Plugin3 Icons.zip").Create()
-
-                #Finish Logo
-                if self.FINISH_ICON in Images:
-                    Domoticz.Debug("ID: "+str(Images[self.FINISH_ICON].ID))
-                else:
-                    Domoticz.Debug("no Home-Connect finish Image")
-                    Domoticz.Image("Domoticz-Home-Connect-Plugin4 Icons.zip").Create()
-
-                #Clean Logo
-                if self.CLEAN_ICON in Images:
-                    Domoticz.Debug("ID: "+str(Images[self.CLEAN_ICON].ID))
-                else:
-                    Domoticz.Debug("no Home-Connect clean Image")
-                    Domoticz.Image("Domoticz-Home-Connect-Plugin5 Icons.zip").Create()
-
-        Domoticz.Log(str(Images))
         homeconnecthelper.connectHomeConnect(self,Parameters["Username"],Parameters["Password"],Parameters["Mode1"])
-        haId = homeconnecthelper.gethaId(self,Parameters["Mode1"])
-        Domoticz.Log("haId: "+haId)
-        self.selectedprogram = homeconnecthelper.getActiveProgram(self,haId)
-        if self.selectedprogram != "":
-            self.selectedprogram = self.selectedprogram.rpartition(".")[2]
+        self.haId = homeconnecthelper.gethaId(self,Parameters["Mode1"])
+        Domoticz.Log("haId: "+self.haId)
+        if Parameters["Mode2"] == "True":
+            loadIcons(self, Images)
         
         #Create devices
         if len(Devices) == 0:
             Domoticz.Log("Create devices")
-            if haId != None:
-                devicename = Parameters["Mode1"]
-                Domoticz.Log("devicename: "+devicename)
-                Domoticz.Log(str(devicename.endswith("-Monitor")))
-                if not devicename.endswith("-Monitor"):
-                    devicename = devicename + "-Monitor"
+            if self.haId != None:
+                #Generic devices
+                ##Operation state
                 if Parameters["Mode2"] == "True":
-                    Domoticz.Device(Name=devicename, Unit=1, TypeName="Custom", Used=1, Description=haId, Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    #Domoticz.Device(Name="Operation state", Unit=1, TypeName="Custom", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    Domoticz.Device(Name="Operation state", Unit=1, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
                 else:
-                    Domoticz.Device(Name=devicename, Unit=1, TypeName="Custom", Used=1, Description=haId).Create()
-                #Devices[1].Update(nValue=Devices[1].nValue,sValue=Devices[1].sValue,Name=Parameters["Mode1"]+"-Monitor")
+                    #Domoticz.Device(Name="Operation state", Unit=1, TypeName="Custom").Create()
+                    Domoticz.Device(Name="Operation state", Unit=1, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                
+                ##Power state
+                Domoticz.Device(Name="Power state", Unit=2, Type=244, Subtype=73, Switchtype=0).Create()
+
+                ##Active program
+                if Parameters["Mode2"] == "True":
+                    Domoticz.Device(Name="Active program", Unit=3, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                else:
+                    Domoticz.Device(Name="Active program", Unit=3, TypeName="Text").Create()
+
+                ##Door state
+                Domoticz.Device(Name="Door state", Unit=5, Type=244, Subtype=73, Switchtype=11).Create()
+
+                ##Program progres
+                Domoticz.Device(Name="Program progress", Unit=6, TypeName="Percentage").Create()
+
+                ##Remaining program time
+                #Domoticz.Device(Name="Remaining program time", Unit=7, TypeName="Text").Create()
+                if Parameters["Mode2"] == "True":
+                    Domoticz.Device(Name="Remaining program time", Unit=7, TypeName="Custom", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                else:
+                    Domoticz.Device(Name="Remaining program time", Unit=7, TypeName="Custom").Create()
+
+                ##Estimated time
+                if Parameters["Mode2"] == "True":
+                    #Domoticz.Device(Name="Estimated time", Unit=8, TypeName="Custom", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    Domoticz.Device(Name="Estimated time", Unit=8, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                else:
+                    Domoticz.Device(Name="Estimated time", Unit=8, TypeName="Text").Create()
+
+                ##Device specific devices
+                if Parameters["Mode1"] == self.DEVICE_DISHWASHER:
+                    #TODO Custom Dishwasher devices
+                    if Parameters["Mode2"] == "True":
+                        Domoticz.Device(Name="Current program state", Unit=4, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    else:
+                        Domoticz.Device(Name="Current program state", Unit=4, TypeName="Text").Create()
+                #if Parameters["Mode1"] == self.DEVICE_WASHER:
+                    #TODO Customer Washer devices
+                if Parameters["Mode1"] == self.DEVICE_OVEN:
+                    #TODO Custom Oven devices
+                    Domoticz.Device(Name="Current cavity temperature", Unit=9, TypeName="Temperature").Create()
+
+        operationstate = homeconnecthelper.getOperationState(self,self.haId)
+        if operationstate != "" and operationstate != None:
+            #Devices[1].Update(nValue=Devices[1].nValue,sValue=operationstate.rpartition(".")[2],Options={"Custom": operationstate.rpartition(".")[2]})
+            Devices[1].Update(nValue=Devices[1].nValue,sValue=operationstate.rpartition(".")[2])
+
+        powerstate = homeconnecthelper.getPowerState(self,self.haId)
+        if powerstate != "" and powerstate != None:
+            powerstate = powerstate.rpartition(".")[2]
+            if powerstate == "On":
+                Devices[2].Update(nValue=1,sValue="On")
+            else:
+                Devices[2].Update(nValue=0,sValue="Off")
+
+        self.selectedprogram = homeconnecthelper.getActiveProgram(self,self.haId)
+        if self.selectedprogram != "" and self.selectedprogram != None:
+            self.selectedprogram = self.selectedprogram.rpartition(".")[2]
+            Devices[3].Update(nValue=Devices[3].nValue,sValue=self.selectedprogram)
+
+        doorstate = homeconnecthelper.getDoorState(self,self.haId)
+        if doorstate != "" and doorstate != None:
+            doorstate = doorstate.rpartition(".")[2]
+            if doorstate == "Open":
+                Devices[5].Update(nValue=1,sValue="Open")
+            else:
+                Devices[5].Update(nValue=0,sValue="Closed")
 
         self.httpServerConn = Domoticz.Connection(Name="Home-Connect "+Parameters["Mode1"]+" WebServer", Transport="TCP/IP", Protocol="HTTP", Port=Parameters["Port"])
         self.httpServerConn.Listen()
@@ -183,91 +205,119 @@ class BasePlugin:
                             homeconnecthelper.connectHomeConnect(self,Parameters["Username"],Parameters["Password"],Parameters["Mode1"])
                     data = self.access_token
                 elif a.startswith("haId:") == True:
-                    deviceScope = a.split(":")[1]
-                    Domoticz.Debug(deviceScope)
-                    for d in Devices:
-                        Domoticz.Log(Devices[d].Name)
-                        if Devices[d].Name.startswith(deviceScope) == True:
-                            data = Devices[d].Description
+                    data = self.haId
                 else:
                     #Domoticz.Log(a)
                     json_items = json.loads(a)
-                    deviceHaId = ""
-                    deviceItems = None
+                    deviceItems = []
                     for q,w in json_items.items():
                         Domoticz.Debug(q)
-                        if q == "haId":
-                            deviceHaId = w
                         if q == "items":
                             deviceItems = w
-                    if deviceHaId != "":
-                        for d in Devices:
-                            if Devices[d].Description == deviceHaId:
-                                for deviceItemList in deviceItems:
-                                    Domoticz.Debug(str(deviceItemList))
-                                    deviceKey = ""
-                                    deviceValue = ""
-                                    for k in deviceItemList:
-                                        Domoticz.Debug(k + " --> "+str(deviceItemList[k]))
-                                        if k == "key":
-                                            deviceKey = deviceItemList[k]
-                                        if k == "value":
-                                            deviceValue = deviceItemList[k]
-                                    if (deviceKey != "") and (deviceValue != ""):
-                                        if deviceKey == "BSH.Common.Root.SelectedProgram":
-                                            Domoticz.Log(deviceKey+" --> " + str(deviceValue).rpartition(".")[2])
-                                            self.selectedprogram = deviceValue.rpartition(".")[2]
-                                        elif deviceKey == "BSH.Common.Root.ActiveProgram":
-                                            Domoticz.Log(deviceKey+" --> " + str(deviceValue))
-                                        elif deviceKey == "BSH.Common.Option.RemainingProgramTime":
-                                            Domoticz.Log(deviceKey+" --> "+str(deviceValue))
-                                            remainingTimeInSeconds = int(deviceValue)
-                                            if remainingTimeInSeconds > 0:
-                                                remainingTime = datetime.datetime.now() + datetime.timedelta(seconds=remainingTimeInSeconds)
-                                                Domoticz.Log("remainingTime: "+str(remainingTime.strftime("%H:%M")))
-                                                Devices[d].Update(nValue=Devices[d].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.strftime("%M"))})
-                                        elif deviceKey == "BSH.Common.Option.ProgramProgress":
-                                            Domoticz.Log(deviceKey+" --> "+str(deviceValue))
-                                            if Parameters["Mode2"] == "True":
-                                                if self.selectedprogram == "PreRinse":
-                                                    Devices[d].Update(nValue=Devices[d].nValue,sValue=Devices[d].sValue,Image=Images[self.RINSE_ICON].ID)
-                                                #if self.selectedprogram == "Quick45":
-                                                #if self.selectedprogram == "Glas40":
-                                                #if self.selectedprogram == "Kurz40":
-                                                #if self.selectedprogram == "NightWash":
-                                                if self.selectedprogram == "Eco50":
-                                                    if deviceValue > 0 and deviceValue < 10:
-                                                        Devices[d].Update(nValue=Devices[d].nValue,sValue=Devices[d].sValue,Image=Images[self.RINSE_ICON].ID)
-                                                    if deviceValue >= 10 and deviceValue < 60:
-                                                        Devices[d].Update(nValue=Devices[d].nValue,sValue=Devices[d].sValue,Image=Images[self.CLEAN_ICON].ID)
-                                                    if deviceValue >= 60 and deviceValue < 70:
-                                                        Devices[d].Update(nValue=Devices[d].nValue,sValue=Devices[d].sValue,Image=Images[self.SHINE_ICON].ID)
-                                                    if deviceValue >= 70:
-                                                        Devices[d].Update(nValue=Devices[d].nValue,sValue=Devices[d].sValue,Image=Images[self.DRY_ICON].ID)
-                                                #if self.selectedprogram == "Auto2":
-                                                #if self.selectedprogram == "Intensiv70":
-                                        elif deviceKey == "BSH.Common.Status.OperationState":
-                                            status = deviceValue.rpartition(".")[2]
-                                            Domoticz.Log(Devices[d].Description+" has operation state "+status)
-                                            if Devices[d].sValue != status:
-                                                if Parameters["Mode2"] == "True":
-                                                    Devices[d].Update(nValue=0,sValue=status,Image=Images[self.HOMECONNECT_ICON].ID)
-                                                else:
-                                                    Devices[d].Update(nValue=0,sValue=status)
-                                        elif deviceKey == "BSH.Common.Setting.PowerState":
-                                            Domoticz.Log(Devices[d].Description+" is turned "+deviceValue.rpartition(".")[2])
-                                        elif deviceKey == "BSH.Common.Status.DoorState":
-                                            Domoticz.Log(Devices[d].Description+" door is "+deviceValue.rpartition(".")[2])
-                                        elif deviceKey == "BSH.Common.Event.ProgramFinished":
-                                            Domoticz.Log(Devices[d].Description+" finished: "+deviceValue.rpartition(".")[2])
-                                            Devices[d].Update(nValue=Devices[d].nValue,sValue="0",Options={})
+                    for deviceItemList in deviceItems:
+                        Domoticz.Debug(str(deviceItemList))
+                        deviceKey = ""
+                        deviceValue = ""
+                        for k in deviceItemList:
+                            Domoticz.Debug(k + " —> "+str(deviceItemList[k]))
+                            if k == "key":
+                                deviceKey = deviceItemList[k]
+                            elif k == "value":
+                                deviceValue = deviceItemList[k]
+                        if (deviceKey != "") and (deviceValue != ""):
+                            if deviceKey == "BSH.Common.Root.SelectedProgram":
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                Devices[3].Update(nValue=Devices[3].nValue,sValue=deviceValue.rpartition(".")[2])
+                            elif deviceKey == "BSH.Common.Option.RemainingProgramTime":
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                #Devices[7].Update(nValue=deviceValue,sValue=str(deviceValue)+" sec")
+                                Devices[7].Update(nValue=0,sValue=str(deviceValue), Options={"Custom": "1;sec"})
+                                if deviceValue > 0:
+                                    remainingTime = datetime.datetime.now() + datetime.timedelta(seconds=deviceValue)
+                                    Domoticz.Debug("remainingTime: "+str(remainingTime.strftime("%H:%M")))
+                                    Devices[8].Update(nValue=Devices[8].nValue,sValue=str(remainingTime.strftime("%H:%M")))
+                                    #Devices[8].Update(nValue=Devices[8].nValue,sValue=str(remainingTime.hour),Options={"Custom": str(remainingTime.hour)+"; : "+str(remainingTime.strftime("%M"))})
+                            elif deviceKey == "BSH.Common.Option.ProgramProgress": 
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                Devices[6].Update(nValue=deviceValue,sValue=str(deviceValue))
+                                if Parameters["Mode1"] == self.DEVICE_DISHWASHER:
+                                    if Devices[3].sValue == "PreRinse":
+                                        if Parameters["Mode2"] == "True":
+                                            Devices[4].Update(nValue=Devices[4].nValue,sValue="Rinse", Image=Images[self.RINSE_ICON].ID)
                                         else:
-                                            Domoticz.Log(deviceKey+" --> "+str(deviceValue))
-                #Domoticz.Log(str(base64.b64decode(str(value_msg))))
-                #for msgitem in value_msg:
-                    #Domoticz.Log(str(msgitem))
-        
-        #data = "<!doctype html><html><head></head><body><h1>Succesful GET!!!</h1></body</html>"
+                                            Devices[4].Update(nValue=Devices[4].nValue,sValue="Rinse")
+                                    #elif Devices[3].sValue == "Quick45":
+                                        #TODO
+                                    #elif Devices[3].sValue == "Glass48":
+                                        #TODO
+                                    #elif Devices[3].sValue == "Kurz40":
+                                        #TODO
+                                    #elif Devices[3].sValue == "NightWash":
+                                        #TODO
+                                    elif Devices[3].sValue == "Eco50":
+                                        if deviceValue > 0 and deviceValue < 10:
+                                            if Parameters["Mode2"] == "True":
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Rinse", Image=Images[self.RINSE_ICON].ID)
+                                            else:
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Rinse")
+                                        elif deviceValue >= 10 and deviceValue < 60:
+                                            if Parameters["Mode2"] == "True":
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Clean", Image=Images[self.CLEAN_ICON].ID)
+                                            else:
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Clean")
+                                        elif deviceValue >= 60 and deviceValue < 70:
+                                            if Parameters["Mode2"] == "True":
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Shine", Image=Images[self.SHINE_ICON].ID)
+                                            else:
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Shine")
+                                        else:
+                                            if Parameters["Mode2"] == "True":
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Dry", Image=Images[self.DRY_ICON].ID)
+                                            else:
+                                                Devices[4].Update(nValue=Devices[4].nValue,sValue="Dry")
+                                    #elif Devices[3].sValue == "Auto2":
+                                        #TODO
+                                    #elif Devices[3].sValue == "Intensiv70":
+                                        #TODO
+                            elif deviceKey == "BSH.Common.Root.ActiveProgram":
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                Devices[3].Update(nValue=Devices[3].nValue,sValue=deviceValue.rpartition(".")[2])
+                            elif deviceKey == "BSH.Common.Status.OperationState":
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                #Devices[1].Update(nValue=Devices[1].nValue,sValue=deviceValue.rpartition(".")[2],Options={"Custom": deviceValue.rpartition(".")[2]})
+                                Devices[1].Update(nValue=Devices[1].nValue,sValue=deviceValue.rpartition(".")[2])
+                            elif deviceKey == "BSH.Common.Setting.PowerState":
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                powerstate = deviceValue.rpartition(".")[2]
+                                if powerstate == "On":
+                                    Devices[2].Update(nValue=1,sValue="On")
+                                else:
+                                    Devices[2].Update(nValue=0,sValue="Off")
+                            elif deviceKey == "BSH.Common.Status.DoorState":
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                doorstate = deviceValue.rpartition(".")[2]
+                                if doorstate == "Open":
+                                    Devices[5].Update(nValue=1,sValue="Open")
+                                else:
+                                    Devices[5].Update(nValue=0,sValue="Closed")
+                            elif deviceKey == "BSH.Common.Event.ProgramFinished":
+                                #TODO
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                Devices[1].Update(nValue=Devices[1].nValue,sValue="")
+                                Devices[3].Update(nValue=Devices[3].nValue,sValue="")
+                                if Parameters["Mode1"] == self.DEVICE_DISHWASHER:
+                                    Devices[4].Update(nValue=Devices[4].nValue,sValue="")
+                                Devices[6].Update(nValue=100,sValue=str(100))
+                                #Devices[7].Update(nValue=0,sValue="0 sec")
+                                Devices[7].Update(nValue=0,sValue="0", Options= {"Custom": "1;sec"})
+                                Devices[8].Update(nValue=0,sValue="")
+                            elif deviceKey == "Cooking.Oven.Status.CurrentCavityTemperature":
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
+                                if Parameters["Mode1"] == self.DEVICE_OVEN:
+                                    Domoticz.Debug("Temp: "+str(deviceValue))
+                                    Devices[9].Update(nValue=0,sValue=str(deviceValue))
+                            else:
+                                Domoticz.Log(deviceKey+" —> "+str(deviceValue))
         self.httpClientConn.Send({"Status":"200 OK", "Headers": {"Connection": "keep-alive", "Accept": "Content-Type: text/html; charset=UTF-8"}, "Data": data})
 
     def onCommand(self, Unit, Command, Level, Hue):
@@ -334,3 +384,48 @@ def DumpConfigToLog():
         Domoticz.Debug("Device sValue:   '" + Devices[x].sValue + "'")
         Domoticz.Debug("Device LastLevel: " + str(Devices[x].LastLevel))
     return
+
+def loadIcons(self, Images):
+    #Home-Connect Logo
+    if self.HOMECONNECT_ICON in Images:
+        Domoticz.Debug("ID: "+str(Images[self.HOMECONNECT_ICON].ID))
+    else:
+        Domoticz.Debug("no Home-Connect Image")
+        Domoticz.Image("Home-Connect-Plugin Icons.zip").Create()
+
+    #Dry Logo
+    if self.DRY_ICON in Images:
+        Domoticz.Debug("ID: "+str(Images[self.DRY_ICON].ID))
+    else:
+        Domoticz.Debug("no Home-Connect dry Image")
+        Domoticz.Image("Home-Connect-Plugin1 Icons.zip").Create()
+
+    #Rinse Logo
+    if self.RINSE_ICON in Images:
+        Domoticz.Debug("ID: "+str(Images[self.RINSE_ICON].ID))
+    else:
+        Domoticz.Debug("no Home-Connect rinse Image")
+        Domoticz.Image("Home-Connect-Plugin2 Icons.zip").Create()
+
+    #Shine Logo
+    if self.SHINE_ICON in Images:
+        Domoticz.Debug("ID: "+str(Images[self.SHINE_ICON].ID))
+    else:
+        Domoticz.Debug("no Home-Connect shine Image")
+        Domoticz.Image("Home-Connect-Plugin3 Icons.zip").Create()
+
+    #Finish Logo
+    if self.FINISH_ICON in Images:
+        Domoticz.Debug("ID: "+str(Images[self.FINISH_ICON].ID))
+    else:
+        Domoticz.Debug("no Home-Connect finish Image")
+        Domoticz.Image("Home-Connect-Plugin4 Icons.zip").Create()
+
+    #Clean Logo
+    if self.CLEAN_ICON in Images:
+        Domoticz.Debug("ID: "+str(Images[self.CLEAN_ICON].ID))
+    else:
+        Domoticz.Debug("no Home-Connect clean Image")
+        Domoticz.Image("Home-Connect-Plugin5 Icons.zip").Create()
+
+    Domoticz.Log(str(Images))

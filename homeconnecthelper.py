@@ -114,6 +114,51 @@ def getActiveProgram(self,haId):
                 return str(value_item[data])
     return ""
 
+def getDoorState(self,haId):
+    Domoticz.Debug("getDoorState")
+    url_getDoorState = BASEURL + "/api/homeappliances/" + haId + "/status/BSH.Common.Status.DoorState"
+    header = {"Accept": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + self.access_token}
+    response_getDoorState = requests.get(url_getDoorState, headers=header)
+    json_items = json.loads(str(response_getDoorState.text))
+    response_getDoorState.close()
+    Domoticz.Debug(response_getDoorState.text)
+    for key_item, value_item in json_items.items():
+        Domoticz.Debug(str(key_item)+" --> "+str(value_item))
+        for data in value_item:
+            if data == "value":
+                Domoticz.Debug(data+" --> "+str(value_item[data]))
+                return str(value_item[data])
+
+def getPowerState(self,haId):
+    Domoticz.Debug("getPowerState")
+    url_getPowerState = BASEURL + "/api/homeappliances/" + haId + "/settings/BSH.Common.Setting.PowerState"
+    header = {"Accept": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + self.access_token}
+    response_getPowerState = requests.get(url_getPowerState, headers=header)
+    json_items = json.loads(str(response_getPowerState.text))
+    response_getPowerState.close()
+    Domoticz.Debug(response_getPowerState.text)
+    for key_item, value_item in json_items.items():
+        Domoticz.Debug(str(key_item)+" --> "+str(value_item))
+        for data in value_item:
+            if data == "value":
+                Domoticz.Debug(data+" --> "+str(value_item[data]))
+                return str(value_item[data])
+
+def getOperationState(self,haId):
+    Domoticz.Debug("getOperationState")
+    url_getOperationState = BASEURL + "/api/homeappliances/" + haId + "/status/BSH.Common.Status.OperationState"
+    header = {"Accept": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + self.access_token}
+    response_getOperationState = requests.get(url_getOperationState, headers=header)
+    json_items = json.loads(str(response_getOperationState.text))
+    response_getOperationState.close()
+    Domoticz.Debug(response_getOperationState.text)
+    for key_item, value_item in json_items.items():
+        Domoticz.Debug(str(key_item)+" --> "+str(value_item))
+        for data in value_item:
+            if data == "value":
+                Domoticz.Debug(data+" --> "+str(value_item[data]))
+                return str(value_item[data])
+
 """
 Method for device authorization and getting a token
 
@@ -135,7 +180,7 @@ None
 def connectHomeConnect(self,username,password,scope):
     #'Request authorization to access home appliance" and "Return device code, user code, verification uri, ..."
     url_authorization = BASEURL + "/security/oauth/device_authorization"
-    scope = "IdentifyAppliance " + scope
+    scope = "IdentifyAppliance Monitor Settings"
     data_authorization = {"client_id": self.clientid, "scope": scope}
     response_authorization = requests.post(url_authorization,data_authorization,HEADER_URLENCODED)
     Domoticz.Debug(response_authorization.text)

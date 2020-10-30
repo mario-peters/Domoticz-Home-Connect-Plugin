@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.6
-
 import sys
 import requests
 from sseclient import SSEClient
@@ -37,6 +35,7 @@ if len (sys.argv) == 5:
                 header = {"Accept": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + access_token}
                 messages = SSEClient(url_SSEConnection, headers=header)
                 for msg in messages:
+                    #if str(msg) != "":
                     logger.info("message: [["+str(msg)+"]]")
                     count = 0
                     HEADER_JSON = {"content-type": "application/vnd.bsh.sdk.v1+json"}
