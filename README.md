@@ -5,9 +5,9 @@ This plugin makes it possible to monitor Home Connect devices in Domoticz.
 
 # Features
 Currently the following Home Connect scopes ([API Home Connect](https://developer.home-connect.com/docs/authorization/scope)) are supported
-* Dishwasher-Monitor
-* Washer-Monitor
-* Oven-Monitor
+* Dishwasher (scope: "IdentifyAppliance Monitor Settings")
+* Washer (scope: "IdentifyAppliance Monitor Settings")
+* Oven (scope: "IdentifyAppliance Monitor Settings")
 
 # Changelog
 * v.3.0.1 Small fixes + power state switch functionality (turning device on or off/standby (depending on device))
