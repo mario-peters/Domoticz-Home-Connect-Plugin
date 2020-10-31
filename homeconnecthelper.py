@@ -197,7 +197,7 @@ def setPowerState(self,devicetype,state):
  
     response = requests.put(url_setPowerState, headers=header, data=data)
     Domoticz.Debug(str(response.status_code))
-    if response.status_code == "204":
+    if str(response.status_code) == "204":
         response.close()
         return True
     response.close()
