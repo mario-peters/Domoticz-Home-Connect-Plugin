@@ -144,6 +144,65 @@ def getPowerState(self,haId):
                 Domoticz.Debug(data+" --> "+str(value_item[data]))
                 return str(value_item[data])
 
+def setPowerState(self,devicetype,state):
+    Domoticz.Debug("setPowerState")
+    url_setPowerState = BASEURL + "/api/homeappliances/" + self.haId + "/settings/BSH.Common.Setting.PowerState"
+    header = {"Content-Type": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + self.access_token}
+    data = None 
+    if state == "On":
+        if devicetype == self.DEVICE_DISHWASHER:
+            data = json.dumps({
+              'data': {
+                'key': 'BSH.Common.Setting.PowerState',
+                'value': 'BSH.Common.EnumType.PowerState.On',
+                'type': 'BSH.Common.EnumType.PowerState',
+                'constraints': {
+                  'allowedvalues': ['BSH.Common.EnumType.Powerstate.On', 'BSH.Common.EnumType.PowerState.Off']
+                }
+              }
+            })
+        elif devicetype == self.DEVICE_OVEN:
+            data = json.dumps({
+              'data': {
+                'key': 'BSH.Common.Setting.PowerState',
+                'value': 'BSH.Common.EnumType.PowerState.On',
+                'type': 'BSH.Common.EnumType.PowerState',
+                'constraints': {
+                  'allowedvalues': ['BSH.Common.EnumType.Powerstate.On', 'BSH.Common.EnumType.PowerState.Standby']
+                }
+              }
+            })
+    elif state == "Off":
+        data = json.dumps({
+          'data': {
+            'key': 'BSH.Common.Setting.PowerState',
+            'value': 'BSH.Common.EnumType.PowerState.Off',
+            'type': 'BSH.Common.EnumType.PowerState',
+            'constraints': {
+              'allowedvalues': ['BSH.Common.EnumType.Powerstate.On', 'BSH.Common.EnumType.PowerState.Off']
+            }
+          }
+        })
+    elif state == "Standby":
+        data = json.dumps({
+          'data': {
+            'key': 'BSH.Common.Setting.PowerState',
+            'value': 'BSH.Common.EnumType.PowerState.Standby',
+            'type': 'BSH.Common.EnumType.PowerState',
+            'constraints': {
+              'allowedvalues': ['BSH.Common.EnumType.Powerstate.On', 'BSH.Common.EnumType.PowerState.Standby']
+            }
+          }
+        })
+ 
+    response = requests.put(url_setPowerState, headers=header, data=data)
+    Domoticz.Debug(str(response.status_code))
+    if response.status_code == "204":
+        response.close()
+        return True
+    response.close()
+    return False
+
 def getOperationState(self,haId):
     Domoticz.Debug("getOperationState")
     url_getOperationState = BASEURL + "/api/homeappliances/" + haId + "/status/BSH.Common.Status.OperationState"

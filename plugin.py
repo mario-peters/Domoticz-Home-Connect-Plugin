@@ -1,5 +1,5 @@
 """
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.0.0" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.0.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
         <h2>Home Connect domoticz plugin 3.0</h2><br/>
         <h3>Features</h3>
@@ -97,8 +97,7 @@ class BasePlugin:
                     #Domoticz.Device(Name="Operation state", Unit=1, TypeName="Custom", Image=Images[self.HOMECONNECT_ICON].ID).Create()
                     Domoticz.Device(Name="Operation state", Unit=1, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
                 else:
-                    #Domoticz.Device(Name="Operation state", Unit=1, TypeName="Custom").Create()
-                    Domoticz.Device(Name="Operation state", Unit=1, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    Domoticz.Device(Name="Operation state", Unit=1, TypeName="Text").Create()
                 
                 ##Power state
                 Domoticz.Device(Name="Power state", Unit=2, Type=244, Subtype=73, Switchtype=0).Create()
@@ -281,7 +280,10 @@ class BasePlugin:
                                         #TODO
                             elif deviceKey == "BSH.Common.Root.ActiveProgram":
                                 Domoticz.Log(deviceKey+" —> "+str(deviceValue))
-                                Devices[3].Update(nValue=Devices[3].nValue,sValue=deviceValue.rpartition(".")[2])
+                                if "." in str(deviceValue):
+                                    Devices[3].Update(nValue=Devices[3].nValue,sValue=str(deviceValue).rpartition(".")[2])
+                                else:
+                                    Devices[3].Update(nValue=Devices[3].nValue,sValue=str(deviceValue))
                             elif deviceKey == "BSH.Common.Status.OperationState":
                                 Domoticz.Log(deviceKey+" —> "+str(deviceValue))
                                 #Devices[1].Update(nValue=Devices[1].nValue,sValue=deviceValue.rpartition(".")[2],Options={"Custom": deviceValue.rpartition(".")[2]})
@@ -322,6 +324,20 @@ class BasePlugin:
 
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Log("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level))
+        if Parameters["Mode1"] == self.DEVICE_DISHWASHER:
+            if str(Command) == "On":
+                if homeconnecthelper.setPowerState(self, self.DEVICE_DISHWASHER, str(Command)) == True:
+                    Devices[Unit].Update(nValue=1,sValue="On")
+            elif str(Command) == "Off":
+                if homeconnecthelper.setPowerState(self, self.DEVICE_DISHWASHER, str(Command)) == True:
+                    Devices[Unit].Update(nValue=1,sValue="Off")
+        elif Parameters["Mode1"] == self.DEVICE_OVEN:
+            if str(Command) == "On":
+                if homeconnecthelper.setPowerState(self, self.DEVICE_OVEN, str(Command)) == True:
+                    Devices[Unit].Update(nValue=1,sValue="On")
+            elif str(Command) == "Off":
+                if homeconnecthelper.setPowerState(self, self.DEVICE_OVEN, str("Standby")) == True:
+                    Devices[Unit].Update(nValue=0,sValue="Off")
 
     def onNotification(self, Name, Subject, Text, Status, Priority, Sound, ImageFile):
         Domoticz.Log("Notification: " + Name + "," + Subject + "," + Text + "," + Status + "," + str(Priority) + "," + Sound + "," + ImageFile)
