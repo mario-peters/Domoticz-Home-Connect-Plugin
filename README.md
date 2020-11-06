@@ -21,3 +21,4 @@ Currently the following Home Connect scopes ([API Home Connect](https://develope
 # TODO
 * Progress images for programs Quick45, Glas40, Kurz60, NightWash, Auto2 and Intensiv70
 * New Home Connect appliances.
+* Restarting the plugin/background script after internet failure
