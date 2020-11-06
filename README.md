@@ -8,6 +8,7 @@ Currently the following Home Connect scopes ([API Home Connect](https://develope
 * Dishwasher (scope: "IdentifyAppliance Monitor Settings")
 * Washer (scope: "IdentifyAppliance Monitor Settings")
 * Oven (scope: "IdentifyAppliance Monitor Settings")
+* Dryer (scope: "IdentifyAppliance Monitor Settings")
 
 # Changelog
 * v.3.0.1 Small fixes + power state switch functionality (turning device on or off/standby (depending on device))
