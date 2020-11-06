@@ -11,6 +11,7 @@ Currently the following Home Connect scopes ([API Home Connect](https://develope
 * Dryer (scope: "IdentifyAppliance Monitor Settings")
 
 # Changelog
+* v.3.1.0 Dryer functionality
 * v.3.0.1 Small fixes + power state switch functionality (turning device on or off/standby (depending on device))
 * v.3.0.0 New version of the plugin with more devices
 * v.2.0.2 The Client ID of you the registered Home Connect developer account is cnow onfigurable.
