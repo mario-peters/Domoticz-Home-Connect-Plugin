@@ -1,12 +1,13 @@
 """
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.0.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.1.0" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
         <h2>Home Connect domoticz plugin 3.0</h2><br/>
         <h3>Features</h3>
         <ul style="list-style-type:square">
-            <li>Dishwasher-Monitor supported</li>
-            <li>Washer-Monitor supported</li>
-            <li>Oven-Monitor supported</li>
+            <li>Dishwasher supported</li>
+            <li>Washer supported</li>
+            <li>Oven supported</li>
+            <li>Dryer supported</li>
         </ul>
         <h3>Configuration</h3>
         <ul style="list-style-type:square">
@@ -15,9 +16,10 @@
             <li>Port. This is the port on which the httplistener will listen for commands from the homeconnectSSE.sh script.</li>
             <li>Scope. This is the scope of the devices according to the Home Connect API (<a href="https://developer.home-connect.com/docs/authorization/scope">API Home Connect</a>).
                 <ul style="list-style-type:square">
-                    <li>Dishwasher-Monitor</li>
-                    <li>Washer-Monitor</li>
-                    <li>Oven-Monitor</li>
+                    <li>Dishwasher</li>
+                    <li>Washer</li>
+                    <li>Oven</li>
+                    <li>Dryer</li>
                 </ul>
             </li>
             <li>Custom icons. Option for choosing custom icons. Default is False.</li>
@@ -34,6 +36,7 @@
                 <option label="Dishwasher" value="Dishwasher" default="true"/>
                 <option label="Washer" value="Washer"/>
                 <option label="Oven" value="Oven"/>
+                <option label="Dryer" value="Dryer"/>
             </options>
         </param>
         <param field="Mode2" label="Custom icons" width="150px" required="false">
@@ -73,6 +76,7 @@ class BasePlugin:
     DEVICE_DISHWASHER = "Dishwasher"
     DEVICE_WASHER = "Washer"
     DEVICE_OVEN = "Oven"
+    DEVICE_DRYER = "Dryer"
 
     def __init__(self):
         #self.var = 123
@@ -140,6 +144,8 @@ class BasePlugin:
                 if Parameters["Mode1"] == self.DEVICE_OVEN:
                     #TODO Custom Oven devices
                     Domoticz.Device(Name="Current cavity temperature", Unit=9, TypeName="Temperature").Create()
+                #if Parameters["Mode1"] == self.DEVICE_DRYER:
+                    #TODO Custom Dryer devices
 
         operationstate = homeconnecthelper.getOperationState(self,self.haId)
         if operationstate != "" and operationstate != None:
@@ -190,8 +196,6 @@ class BasePlugin:
     def onMessage(self, Connection, Data):
         Domoticz.Log("onMessage called")
         
-        #json_items = json.loads(str(Data))
-        #for key_item, value_item in json_items.items():
         data = ""
         for key_msg, value_msg in Data.items():
             Domoticz.Debug(str(key_msg)+" --> "+str(value_msg))
@@ -303,7 +307,6 @@ class BasePlugin:
                                 else:
                                     Devices[5].Update(nValue=0,sValue="Closed")
                             elif deviceKey == "BSH.Common.Event.ProgramFinished":
-                                #TODO
                                 Domoticz.Log(deviceKey+" —> "+str(deviceValue))
                                 Devices[1].Update(nValue=Devices[1].nValue,sValue="")
                                 Devices[3].Update(nValue=Devices[3].nValue,sValue="")
