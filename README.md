@@ -11,6 +11,7 @@ Currently the following Home Connect scopes ([API Home Connect](https://develope
 * Dryer (scope: "IdentifyAppliance Monitor Settings")
 
 # Changelog
+* v.3.1.1 Multi devices of same type. See wiki for changed installation procedure.
 * v.3.1.0 Dryer functionality
 * v.3.0.1 Small fixes + power state switch functionality (turning device on or off/standby (depending on device))
 * v.3.0.0 New version of the plugin with more devices
@@ -24,4 +25,3 @@ Currently the following Home Connect scopes ([API Home Connect](https://develope
 * Progress images for programs Quick45, Glas40, Kurz60, NightWash, Auto2 and Intensiv70
 * New Home Connect appliances.
 * Restarting the plugin/background script after internet failure
-* Multiple devices of same type
