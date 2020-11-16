@@ -71,7 +71,7 @@ Return
 ------
 haId : Retrieved String or None
 """
-def gethaId(self,scope):
+def gethaId(self,scope,enumber):
     url_homeappliances = BASEURL + "/api/homeappliances"
     header = {"Accept": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer "+self.access_token}
     response_homeappliances = requests.get(url_homeappliances, headers=header)
@@ -86,6 +86,7 @@ def gethaId(self,scope):
             for item in items:
                 haId = ""
                 scopeType = ""
+                en = ""
                 for key in item:
                     Domoticz.Debug(key + " --> " + str(item[key]))
                     if key == "haId":
@@ -94,8 +95,12 @@ def gethaId(self,scope):
                         #Domoticz.Debug(self.haId)
                     if key == "type":
                         scopeType = item[key]
+                    if key == "enumber":
+                        en = item[key]
                 if scopeType == scope or (scopeType+"-Monitor") == scope:
-                    return haId
+                    if enumber == en:
+                        Domoticz.Log("Enumber: "+enumber)
+                        return haId
     return None
 
 def getActiveProgram(self,haId):

@@ -1,5 +1,5 @@
 """
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.1.0" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.1.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
         <h2>Home Connect domoticz plugin 3.0</h2><br/>
         <h3>Features</h3>
@@ -46,6 +46,7 @@
             </options>
         </param>
         <param field="Mode3" label="Client ID" width="600px" required="true"/>
+        <param field="Mode4" label="Device E-number" width="150px"/>
     </params>
 </plugin>
 """
@@ -86,7 +87,7 @@ class BasePlugin:
         Domoticz.Log("onStart called "+Parameters["Key"])
         self.clientid = Parameters["Mode3"]
         homeconnecthelper.connectHomeConnect(self,Parameters["Username"],Parameters["Password"],Parameters["Mode1"])
-        self.haId = homeconnecthelper.gethaId(self,Parameters["Mode1"])
+        self.haId = homeconnecthelper.gethaId(self,Parameters["Mode1"],Parameters["Mode4"])
         Domoticz.Log("haId: "+self.haId)
         if Parameters["Mode2"] == "True":
             loadIcons(self, Images)
