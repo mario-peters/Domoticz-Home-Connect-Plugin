@@ -1,7 +1,7 @@
 """
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.2.0" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.2.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
-        <h2>Home Connect domoticz plugin 3.0</h2><br/>
+        <h2>Home Connect domoticz plugin 3.2.1</h2><br/>
         <h3>Features</h3>
         <ul style="list-style-type:square">
             <li>Dishwasher supported</li>
@@ -25,7 +25,8 @@
                 </ul>
             </li>
             <li>Custom icons. Option for choosing custom icons. Default is False.</li>
-            <li>Client ID: Client ID of the application as you registerd in your Home Connect Developer account</li>
+            <li>Client ID: Client ID of the application as you registerd in your Home Connect Developer account.</li>
+            <li>Device E-number: Unique E-number of the Siemens/Bosch device.</li>
         </ul>
         <br/><br/>
     </description>
@@ -99,6 +100,7 @@ class BasePlugin:
         #Create devices
         if len(Devices) == 0:
             Domoticz.Log("Create devices")
+            self.haId = "blaat"
             if self.haId != None:
                 #Generic devices
                 ##Operation state
@@ -178,11 +180,13 @@ class BasePlugin:
                     OptionsIntensiveLevel = {"LevelActions": "||||", "LevelNames": "IntensiveStageOff|IntensiveStage1|IntensiveStage2", "LevelOffHidden": "false", "SelectorStyle": "1"}
                     Domoticz.Device(Name="Intensive level", Unit=11, TypeName="Selector Switch", Options=OptionsIntensiveLevel).Create()
 
+        operationstate = "" 
         operationstate = homeconnecthelper.getOperationState(self,self.haId)
         if operationstate != "" and operationstate != None:
             #Devices[1].Update(nValue=Devices[1].nValue,sValue=operationstate.rpartition(".")[2],Options={"Custom": operationstate.rpartition(".")[2]})
             Devices[1].Update(nValue=Devices[1].nValue,sValue=operationstate.rpartition(".")[2])
 
+        powerstate = ""
         powerstate = homeconnecthelper.getPowerState(self,self.haId)
         if powerstate != "" and powerstate != None:
             powerstate = powerstate.rpartition(".")[2]
@@ -191,11 +195,13 @@ class BasePlugin:
             else:
                 Devices[2].Update(nValue=0,sValue="Off")
 
+        self.selectedprogram = ""
         self.selectedprogram = homeconnecthelper.getActiveProgram(self,self.haId)
         if self.selectedprogram != "" and self.selectedprogram != None:
             self.selectedprogram = self.selectedprogram.rpartition(".")[2]
             Devices[3].Update(nValue=Devices[3].nValue,sValue=self.selectedprogram)
 
+        doorstate = ""
         doorstate = homeconnecthelper.getDoorState(self,self.haId)
         if doorstate != "" and doorstate != None:
             doorstate = doorstate.rpartition(".")[2]
@@ -402,6 +408,36 @@ class BasePlugin:
             elif str(Command) == "Off":
                 if homeconnecthelper.setPowerState(self, self.DEVICE_OVEN, str("Standby")) == True:
                     Devices[Unit].Update(nValue=0,sValue="Off")
+        elif Parameters["Mode1"] == self.DEVICE_HOOD:
+            if str(Command) == "Set Level" and Unit == 10:
+                if Level == 0:
+                    if homeconnecthelper.setVentingLevel(self,"FanOff") == True:
+                        Devices[10].Update(nValue=0,sValue="0")
+                elif Level == 10:
+                    if homeconnecthelper.setVentingLevel(self,"FanStage01") == True:
+                        Devices[10].Update(nValue=10,sValue="10")
+                elif Level == 20:
+                    if homeconnecthelper.setVentingLevel(self,"FanStage02") == True:
+                        Devices[10].Update(nValue=20,sValue="20")
+                elif Level == 30:
+                    if homeconnecthelper.setVentingLevel(self,"FanStage03") == True:
+                        Devices[10].Update(nValue=30,sValue="30")
+                elif Level == 40:
+                    if homeconnecthelper.setVentingLevel(self,"FanStage04") == True:
+                        Devices[10].Update(nValue=40,sValue="40")
+                elif Level == 50:
+                    if homeconnecthelper.setVentingLevel(self,"FanStage05") == True:
+                        Devices[10].Update(nValue=50,sValue="50")
+            elif str(Command) == "Set Level" and Unit == 11:
+                if Level == 0:
+                    if homeconnecthelper.setIntensiveLevel(self,"IntensiveStageOff") == True:
+                        Devices[11].Update(nValue=0,sValue="0")
+                elif Level == 10:
+                    if homeconnecthelper.setIntensiveLevel(self,"IntensiveStage1") == True:
+                        Devices[11].Update(nValue=10,sValue="10")
+                elif Level == 20:
+                    if homeconnecthelper.setIntensiveLevel(self,"IntensiveStage2") == True:
+                        Devices[11].Update(nValue=20,sValue="20")
 
     def onNotification(self, Name, Subject, Text, Status, Priority, Sound, ImageFile):
         Domoticz.Log("Notification: " + Name + "," + Subject + "," + Text + "," + Status + "," + str(Priority) + "," + Sound + "," + ImageFile)

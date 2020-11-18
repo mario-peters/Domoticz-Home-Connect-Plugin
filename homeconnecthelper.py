@@ -149,6 +149,50 @@ def getPowerState(self,haId):
                 Domoticz.Debug(data+" --> "+str(value_item[data]))
                 return str(value_item[data])
 
+def setVentingLevel(self,level):
+    Domoticz.Debug("setVentingLevel")
+    url_setVentingLevel = BASEURL + "/api/homeappliances/"+ self.haId + "/programs/active/options/Cooking.Common.Option.Hood.VentingLevel"
+    header = {"Content-Type": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + self.access_token}
+    data = json.dumps({
+      'data': {
+        'key': 'Cooking.Common.Option.Hood.VentingLevel',
+        'value': 'Cooking.Hood.EnumType.Stage.'+level,
+        'type': 'Cooking.Hood.EnumType.Stage',
+        'constrains': {
+           'allowedvalues': ['Cooking.Hood.EnumType.Stage.FanOff', 'Cooking.Hood.EnumType.Stage.FanStage01', 'Cooking.Hood.EnumType.Stage.FanStage02', 'Cooking.Hood.EnumType.Stage.FanStage03', 'Cooking.Hood.EnumType.Stage.FanStage04', 'Cooking.Hood.EnumType.Stage.FanStage05']
+        }
+      }
+    })
+    response = requests.put(url_setVentingLevel, headers=header, data=data)
+    Domoticz.Log(str(response.status_code))
+    if str(response.status_code) == "204":
+        response.close()
+        return True
+    response.close()
+    return False 
+
+def setIntensiveLevel(self,level):
+    Domoticz.Debug("setIntensiveLevel")
+    url_setIntentsiveLevel = BASEURL + "/api/homeappliances/"+ self.haId + "/programs/active/options/Cooking.Common.Option.Hood.IntensiveLevel"
+    header = {"Content-Type": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + self.access_token}
+    data = json.dumps({
+      'data': {
+        'key': 'Cooking.Common.Option.Hood.IntensiveLevel',
+        'value': 'Cooking.Hood.EnumType.IntensiveStage.'+level,
+        'type': 'Cooking.Hood.EnumType.IntensiveStage',
+        'constrains': {
+           'allowedvalues': ['Cooking.Hood.EnumType.IntensiveStage.IntensiveStageOff', 'Cooking.Hood.EnumType.IntensiveStage.IntensiveStage1', 'Cooking.Hood.EnumType.IntensiveStage.IntensiveStage2']
+        }
+      }
+    })
+    response = requests.put(url_setIntensiveLevel, headers=header, data=data)
+    Domoticz.Log(str(response.status_code))
+    if str(response.status_code) == "204":
+        response.close()
+        return True
+    response.close()
+    return False 
+
 def setPowerState(self,devicetype,state):
     Domoticz.Debug("setPowerState")
     url_setPowerState = BASEURL + "/api/homeappliances/" + self.haId + "/settings/BSH.Common.Setting.PowerState"
