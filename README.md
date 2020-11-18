@@ -12,6 +12,7 @@ Currently the following Home Connect scopes ([API Home Connect](https://develope
 * Hood (scope: "IdentifyAppliance Monitor Settings")
 
 # Changelog
+* v.3.2.1 Hood functionality: VentingLevel and IntensiveLevel
 * v.3.2.0 Hood functionality
 * v.3.1.1 Multi devices of same type. See wiki for changed installation procedure.
 * v.3.1.0 Dryer functionality
