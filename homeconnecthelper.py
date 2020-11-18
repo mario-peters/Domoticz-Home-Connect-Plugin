@@ -155,7 +155,8 @@ def setPowerState(self,devicetype,state):
     header = {"Content-Type": "application/vnd.bsh.sdk.v1+json", "Authorization": "Bearer " + self.access_token}
     data = None 
     if state == "On":
-        if devicetype == self.DEVICE_DISHWASHER:
+        l1 = [self.DEVICE_DISHWASHER, self.DEVICE_HOOD]
+        if devicetype in l1:
             data = json.dumps({
               'data': {
                 'key': 'BSH.Common.Setting.PowerState',

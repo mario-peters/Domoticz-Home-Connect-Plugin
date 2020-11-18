@@ -1,5 +1,5 @@
 """
-<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.1.1" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
+<plugin key="Domoticz-Home-Connect-Plugin" name="Home Connect Plugin" author="Mario Peters" version="3.2.0" wikilink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin/wiki" externallink="https://github.com/mario-peters/Domoticz-Home-Connect-Plugin">
     <description>
         <h2>Home Connect domoticz plugin 3.0</h2><br/>
         <h3>Features</h3>
@@ -8,6 +8,7 @@
             <li>Washer supported</li>
             <li>Oven supported</li>
             <li>Dryer supported</li>
+            <li>Hood supported</li>
         </ul>
         <h3>Configuration</h3>
         <ul style="list-style-type:square">
@@ -20,6 +21,7 @@
                     <li>Washer</li>
                     <li>Oven</li>
                     <li>Dryer</li>
+                    <li>Hood</li>
                 </ul>
             </li>
             <li>Custom icons. Option for choosing custom icons. Default is False.</li>
@@ -37,6 +39,7 @@
                 <option label="Washer" value="Washer"/>
                 <option label="Oven" value="Oven"/>
                 <option label="Dryer" value="Dryer"/>
+                <option label="Hood" value="Hood"/>
             </options>
         </param>
         <param field="Mode2" label="Custom icons" width="150px" required="false">
@@ -78,6 +81,7 @@ class BasePlugin:
     DEVICE_WASHER = "Washer"
     DEVICE_OVEN = "Oven"
     DEVICE_DRYER = "Dryer"
+    DEVICE_HOOD = "Hood"
 
     def __init__(self):
         #self.var = 123
@@ -113,9 +117,6 @@ class BasePlugin:
                 else:
                     Domoticz.Device(Name="Active program", Unit=3, TypeName="Text").Create()
 
-                ##Door state
-                Domoticz.Device(Name="Door state", Unit=5, Type=244, Subtype=73, Switchtype=11).Create()
-
                 ##Program progres
                 Domoticz.Device(Name="Program progress", Unit=6, TypeName="Percentage").Create()
 
@@ -129,24 +130,53 @@ class BasePlugin:
                 ##Estimated time
                 if Parameters["Mode2"] == "True":
                     #Domoticz.Device(Name="Estimated time", Unit=8, TypeName="Custom", Image=Images[self.HOMECONNECT_ICON].ID).Create()
-                    Domoticz.Device(Name="Estimated time", Unit=8, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    Domoticz.Device(Name="Estimated program time", Unit=8, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
                 else:
-                    Domoticz.Device(Name="Estimated time", Unit=8, TypeName="Text").Create()
+                    Domoticz.Device(Name="Estimated program time", Unit=8, TypeName="Text").Create()
 
                 ##Device specific devices
                 if Parameters["Mode1"] == self.DEVICE_DISHWASHER:
-                    #TODO Custom Dishwasher devices
+                    #Custom Dishwasher devices
                     if Parameters["Mode2"] == "True":
                         Domoticz.Device(Name="Current program state", Unit=4, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
                     else:
                         Domoticz.Device(Name="Current program state", Unit=4, TypeName="Text").Create()
-                #if Parameters["Mode1"] == self.DEVICE_WASHER:
-                    #TODO Customer Washer devices
+
+                    ##Door state
+                    Domoticz.Device(Name="Door state", Unit=5, Type=244, Subtype=73, Switchtype=11).Create()
+
+                if Parameters["Mode1"] == self.DEVICE_WASHER:
+                    #Customer Washer devices
+                    ##Door state
+                    Domoticz.Device(Name="Door state", Unit=5, Type=244, Subtype=73, Switchtype=11).Create()
+
                 if Parameters["Mode1"] == self.DEVICE_OVEN:
-                    #TODO Custom Oven devices
+                    #Custom Oven devices
+                    ##Door state
+                    Domoticz.Device(Name="Door state", Unit=5, Type=244, Subtype=73, Switchtype=11).Create()
+
                     Domoticz.Device(Name="Current cavity temperature", Unit=9, TypeName="Temperature").Create()
-                #if Parameters["Mode1"] == self.DEVICE_DRYER:
-                    #TODO Custom Dryer devices
+                if Parameters["Mode1"] == self.DEVICE_DRYER:
+                    #Custom Dryer devices
+                    ##Door state
+                    Domoticz.Device(Name="Door state", Unit=5, Type=244, Subtype=73, Switchtype=11).Create()
+
+                if Parameters["Mode1"] == self.DEVICE_HOOD:
+                    #Custom Hood devices
+                    ##Elepsed program time
+                    if Parameters["Mode2"] == "True":
+                        #Domoticz.Device(Name="Elapesed program time", Unit=9, TypeName="Custom", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                        Domoticz.Device(Name="Elapsed program time", Unit=9, TypeName="Text", Image=Images[self.HOMECONNECT_ICON].ID).Create()
+                    else:
+                        Domoticz.Device(Name="Elepsed program time", Unit=9, TypeName="Text").Create()
+
+                    ##Venting level
+                    OptionsVentingLevel = {"LevelActions": "||||", "LevelNames": "FanOff|FanStage01|FanStage02|FanStage03|FanStage04|FanStage05", "LevelOffHidden": "false", "SelectorStyle": "1"}
+                    Domoticz.Device(Name="Venting level", Unit=10, TypeName="Selector Switch", Options=OptionsVentingLevel).Create()
+
+                    ##Intensive level
+                    OptionsIntensiveLevel = {"LevelActions": "||||", "LevelNames": "IntensiveStageOff|IntensiveStage1|IntensiveStage2", "LevelOffHidden": "false", "SelectorStyle": "1"}
+                    Domoticz.Device(Name="Intensive level", Unit=11, TypeName="Selector Switch", Options=OptionsIntensiveLevel).Create()
 
         operationstate = homeconnecthelper.getOperationState(self,self.haId)
         if operationstate != "" and operationstate != None:
@@ -232,6 +262,36 @@ class BasePlugin:
                             if deviceKey == "BSH.Common.Root.SelectedProgram":
                                 Domoticz.Log(deviceKey+" —> "+str(deviceValue))
                                 Devices[3].Update(nValue=Devices[3].nValue,sValue=deviceValue.rpartition(".")[2])
+                            elif deviceKey == "BSH.Common.Option.Hood.IntensiveLevel":
+                                Domoticz.Log(deviceKey+" --> "+str(deviceValue))
+                                if Parameters["Mode1"] == self.DEVICE_HOOD:
+                                    intensiveLevel == deviceValue.rpartition(".")[2]
+                                    if intensiveLevel = "IntensiveStageOff":
+                                        Devices[11].Update(nValue=0,sValue="0")
+                                    elif intensiveLevel == "IntensiveStage1":
+                                        Devices[11].Update(nValue=10,sValue="10")
+                                    elif intensiveLevel == "IntensiveStage2":
+                                        Devices[11].Update(nValue=20,sValue="20")
+                            elif deviceKey == "BSH.Common.Option.Hood.VentingLevel":
+                                Domoticz.Log(deviceKey+" --> "+str(deviceValue))
+                                if Parameters["Mode1"] == self.DEVICE_HOOD:
+                                    ventingLevel = deviceValue.rpartition(".")[2]
+                                    if ventingLevel == "FanOff":
+                                        Devices[10].Update(nValue=0,sValue="0")
+                                    elif ventingLevel == "FanStage01":
+                                        Devices[10].Update(nValue=10,sValue="10")
+                                    elif ventingLevel == "FanStage02":
+                                        Devices[10].Update(nValue=20,sValue="20")
+                                    elif ventingLevel == "FanStage03":
+                                        Devices[10].Update(nValue=30,sValue="30")
+                                    elif ventingLevel == "FanStage04":
+                                        Devices[10].Update(nValue=40,sValue="40")
+                                    elif ventingLevel == "FanStage05":
+                                        Devices[10].Update(nValue=50,sValue="50")
+                            elif deviceKey == "BSH.Common.Option.ElapsedProgramTime":
+                                Domoticz.Log(deviceKey+" --> "+str(deviceValue))
+                                if Parameters["Mode1"] == self.DEVICE_HOOD:
+                                    Devices[9].Update(nValue=0,sValue=str(deviceValue), Options={"Custom": "1;sec"})
                             elif deviceKey == "BSH.Common.Option.RemainingProgramTime":
                                 Domoticz.Log(deviceKey+" —> "+str(deviceValue))
                                 #Devices[7].Update(nValue=deviceValue,sValue=str(deviceValue)+" sec")

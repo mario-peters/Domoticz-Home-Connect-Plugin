@@ -13,7 +13,7 @@
 PYTHON_PATH=<Path to python executable>
 DIR=<DIR Domoticz-Home-Connect-Plugin>
 DAEMON=$DIR/homeconnectSSE.py
-DEVICE_NAME=<Dishwasher, Washer, Oven or Dryer>
+DEVICE_NAME=<Dishwasher, Washer, Oven, Dryer or Hood>
 DOMOTICZ_IP=<ip address of Domoticz>
 DOMOTICZ_PORT=<port of hardware config in Domoticz>
 DAEMON_NAME=homeconnectSSE_$DEVICE_NAME
