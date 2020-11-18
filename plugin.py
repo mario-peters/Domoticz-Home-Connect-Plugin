@@ -266,7 +266,7 @@ class BasePlugin:
                                 Domoticz.Log(deviceKey+" --> "+str(deviceValue))
                                 if Parameters["Mode1"] == self.DEVICE_HOOD:
                                     intensiveLevel == deviceValue.rpartition(".")[2]
-                                    if intensiveLevel = "IntensiveStageOff":
+                                    if intensiveLevel == "IntensiveStageOff":
                                         Devices[11].Update(nValue=0,sValue="0")
                                     elif intensiveLevel == "IntensiveStage1":
                                         Devices[11].Update(nValue=10,sValue="10")
