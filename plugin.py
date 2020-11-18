@@ -50,7 +50,7 @@
             </options>
         </param>
         <param field="Mode3" label="Client ID" width="600px" required="true"/>
-        <param field="Mode4" label="Device E-number" width="150px"/>
+        <param field="Mode4" label="Device E-number" width="150px" required="true"/>
     </params>
 </plugin>
 """
