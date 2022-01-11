@@ -279,17 +279,17 @@ username : String
     Home-Connect username
 password : String
     Home-Connect password
-scope : String
+ascope : String
     Scope for which authorization is requested
 
 Return
 ------
 None
 """
-def connectHomeConnect(self,username,password,scope):
+def connectHomeConnect(self,username,password,ascope):
     #'Request authorization to access home appliance" and "Return device code, user code, verification uri, ..."
     url_authorization = BASEURL + "/security/oauth/device_authorization"
-    scope = "IdentifyAppliance Monitor Settings"
+    scope = "IdentifyAppliance "+ascope+"-Monitor "+ascope+"-Settings"
     data_authorization = {"client_id": self.clientid, "scope": scope}
     response_authorization = requests.post(url_authorization,data_authorization,HEADER_URLENCODED)
     Domoticz.Debug(response_authorization.text)
